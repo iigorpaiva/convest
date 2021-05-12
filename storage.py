@@ -48,11 +48,11 @@ for a in ativos:
             dataBancoDeDados = cursor.execute("SELECT * FROM B3SA3;")
             dataBancoDeDados = cursor.fetchmany(7)
 
-            for index_B3SA3, row in DataFrame.iterrows():
+            for index, row in DataFrame.iterrows():
                 for i in range(len(dataBancoDeDados)):
 
                     igual = False
-                    datas = str(index_B3SA3)
+                    datas = str(index)
                     strDatas = "'" + datas + "'" 
                     precoAtual = str(row['close'])
 
@@ -72,5 +72,5 @@ for a in ativos:
 
     finally:
         
-        print("Ativos importados com sucesso!")
+        print(simbolo +" importado com sucesso!")
         bancoDeDados.close()
