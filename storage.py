@@ -11,11 +11,11 @@ API_KEY = open("KEY.txt").read()
 
 ts = TimeSeries(key = API_KEY, output_format = 'pandas')
 
-ativos = ["B3SA3", "PETR4"]
+ativos = [("B3SA3", True), ("PETR4", True)]
 
 for a in ativos:
 
-    tabelaAtivo, MetaDados = ts.get_daily( a + ".SAO", outputsize='full')
+    tabelaAtivo, MetaDados = ts.get_daily(str(a[0]) + ".SAO", outputsize='full')
 
     simbolo = str(MetaDados['2. Symbol'])[0:5]
 
@@ -27,50 +27,55 @@ for a in ativos:
     tabelaAtivo.columns = ['open', 'high', 'low', 'close', 'volume']
     tabelaAtivo.insert(5, "simbolo", simbolo)
     tabelaAtivo.insert(5, "nome", nome)
-    tabelaAtivo.insert(6, "habilitado", True)
+    tabelaAtivo.insert(6, "habilitado", a[1])
 
-    try:
-        bancoDeDados = sql.connect("storage.db")
-        cursor = bancoDeDados.cursor()
+    if tabelaAtivo['habilitado'].values[0] == True:
 
-        DataFrame = pd.DataFrame(tabelaAtivo.iloc[:7], columns= ['close', 'nome', 'simbolo', 'habilitado'])
+        try:
+            bancoDeDados = sql.connect("storage.db")
+            cursor = bancoDeDados.cursor()
 
-        strSimbolo = "'" + simbolo + "'"
+            DataFrame = pd.DataFrame(tabelaAtivo.iloc[:7], columns= ['close', 'nome', 'simbolo', 'habilitado'])
 
-        cursor.execute(("SELECT count(name) FROM sqlite_master WHERE type='table' AND name = "+ strSimbolo + ";"))
-                                                  
-        if cursor.fetchone()[0] == 0:
-            print("NÃO EXISTE TABELA DO ATIVO " + simbolo)
-            DataFrame.to_sql(simbolo, bancoDeDados, if_exists="replace", index=True) 
-        else:
-            print("EXISTE TABELA DO ATIVO " + simbolo)
+            strSimbolo = "'" + simbolo + "'"
 
-            dataBancoDeDados = cursor.execute("SELECT * FROM B3SA3;")
-            dataBancoDeDados = cursor.fetchmany(7)
+            cursor.execute(("SELECT count(name) FROM sqlite_master WHERE type='table' AND name = "+ strSimbolo + ";"))
+                                                    
+            if cursor.fetchone()[0] == 0:
+                print("NÃO EXISTE TABELA DO ATIVO " + simbolo)
+                DataFrame.to_sql(simbolo, bancoDeDados, if_exists="replace", index=True) 
+            else:
+                print("EXISTE TABELA DO ATIVO " + simbolo)
 
-            for index, row in DataFrame.iterrows():
-                for i in range(len(dataBancoDeDados)):
+                dataBancoDeDados = cursor.execute("SELECT * FROM B3SA3;")
+                dataBancoDeDados = cursor.fetchmany(7)
 
-                    igual = False
-                    datas = str(index)
-                    strDatas = "'" + datas + "'" 
-                    precoAtual = str(row['close'])
+                for index, row in DataFrame.iterrows():
+                    for i in range(len(dataBancoDeDados)):
 
-                    if dataBancoDeDados[i][0] == datas:
-                        igual = True
-                        break
-                if igual == False:
-                    cursor.execute("INSERT INTO " + simbolo + " VALUES (?, ?, ?, ?, ?);", (datas, precoAtual, 'Petrobras', 'PETR4', 1))
-                else:
-                    cursor.execute("UPDATE " + simbolo + " SET close = " + precoAtual + " WHERE date = " + strDatas + ";")
-                                            
-                bancoDeDados.commit()
-    
-    except sql.Error as error:
+                        igual = False
+                        datas = str(index)
+                        strDatas = "'" + datas + "'" 
+                        precoAtual = str(row['close'])
 
-        print("Erro na conexão com sqlite.")
-
-    finally:
+                        if dataBancoDeDados[i][0] == datas:
+                            igual = True
+                            break
+                    if igual == False:
+                        cursor.execute("INSERT INTO " + simbolo + " VALUES (?, ?, ?, ?, ?);", (datas, precoAtual, 'Petrobras', 'PETR4', 1))
+                    else:
+                        cursor.execute("UPDATE " + simbolo + " SET close = " + precoAtual + " WHERE date = " + strDatas + ";")
+                                                
+                    bancoDeDados.commit()
         
-        print(simbolo +" importado com sucesso!")
-        bancoDeDados.close()
+        except sql.Error as error:
+
+            print("Erro na conexão com sqlite.")
+
+        finally:
+            
+            print(simbolo +" importado com sucesso!")
+            bancoDeDados.close()
+    
+    else:
+        print("Esse ativo nao esta habilitado para importacao!")
