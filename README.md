@@ -1,10 +1,10 @@
-# convest
+## convest
 
 Trabalho desenvolvido durante o processo seletivo da Convest Consultoria de Investimentos Ltda.
 
 Para que a aplicação funcione, deve-se inserir somente sua API-KEY da Alpha Vantage no arquivo "KEY.txt".
 
-# Condições: 
+## Condições: 
 
  -Se o ativo estiver como habilitado em TRUE, a importação será executada;
  -A aplicação criará duas tabelas, caso não existam, dos ativos B3SA3 e PETR4;
