@@ -5,7 +5,7 @@ Trabalho desenvolvido durante o processo seletivo da Convest Consultoria de Inve
 Para que a aplicação funcione, deve-se inserir somente sua API-KEY da Alpha Vantage no arquivo "KEY.txt".
 
 Condições: 
-<p align="justify">
+<h align="justify">
 
  •<a >Se o ativo estiver como habilitado em TRUE, a importação será executada;</a> 
  •<a > A aplicação criará duas tabelas, caso não existam, dos ativos B3SA3 e PETR4;</a>
