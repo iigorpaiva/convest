@@ -57,12 +57,14 @@ for a in ativos:
                         datas = str(index)
                         strDatas = "'" + datas + "'" 
                         precoAtual = str(row['close'])
+                        nomeAtivo = str(row['nome'])
+                        simboloAtivo = str(row['simbolo'])
 
                         if dataBancoDeDados[i][0] == datas:
                             igual = True
                             break
                     if igual == False:
-                        cursor.execute("INSERT INTO " + simbolo + " VALUES (?, ?, ?, ?, ?);", (datas, precoAtual, 'Petrobras', 'PETR4', 1))
+                        cursor.execute("INSERT INTO " + simbolo + " VALUES (?, ?, ?, ?, ?);", (datas, precoAtual, nomeAtivo, simboloAtivo, 1))
                     else:
                         cursor.execute("UPDATE " + simbolo + " SET close = " + precoAtual + " WHERE date = " + strDatas + ";")
                                                 
