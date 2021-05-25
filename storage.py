@@ -35,7 +35,7 @@ for a in ativos:
             bancoDeDados = sql.connect("storage.db")
             cursor = bancoDeDados.cursor()
 
-            DataFrame = pd.DataFrame(tabelaAtivo.iloc[:7], columns= ['close', 'nome', 'simbolo', 'habilitado'])
+            DataFrame = pd.DataFrame(tabelaAtivo, columns= ['close', 'nome', 'simbolo', 'habilitado'])
 
             strSimbolo = "'" + simbolo + "'"
 
